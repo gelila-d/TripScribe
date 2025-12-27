@@ -7,3 +7,14 @@
   --color-primary: #05b6d3;
   --color-secondary: #EF863E;
 }
+
+@utility input-box {
+  @apply w-full text-sm bg-violet-600/5 rounded px-5 py-3 mb-4 outline-none;
+}
+
+@utility btn-primary {
+  @apply w-full bg-violet-400 shadow-lg shadow-violet-200/50 p-[10px] rounded-full my-1 text-white hover:bg-violet-600;
+}
+
+@utility login-ui-box {
+  @apply w-80 h-[450px] rounded-full bg-violet-400 absolute rotate-45}
