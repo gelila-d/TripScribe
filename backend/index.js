@@ -339,6 +339,57 @@ app.get("/search", authenticateToken, async (req, res) => {
     }
 });
 
+
+
+app.get('/travel-stories/filter', authenticateToken, async (req, res) => {
+    const { startDate, endDate } = req.query;
+    
+    
+    const userId = req.user._id || req.user.userId || (req.user.user && req.user.user._id);
+
+    try {
+       
+        if (!startDate || !endDate) {
+            return res.status(400).json({ 
+                error: true, 
+                message: "Both startDate and endDate are required" 
+            });
+        }
+
+        const start = new Date(parseInt(startDate));
+        const end = new Date(parseInt(endDate));
+
+        if (isNaN(start.getTime()) || isNaN(end.getTime())) {
+            return res.status(400).json({ 
+                error: true, 
+                message: "Invalid date format. Please send valid timestamps." 
+            });
+        }
+
+        end.setHours(23, 59, 59, 999);
+
+        const filteredStories = await TravelStory.find({
+            userId: userId,
+            visitedDate: { 
+                $gte: start, 
+                $lte: end 
+            },
+        }).sort({ visitedDate: -1 });
+
+       
+        res.status(200).json({ 
+            stories: filteredStories,
+            count: filteredStories.length 
+        });
+
+    } catch (err) {
+        console.error("Filter Error:", err);
+        res.status(500).json({ 
+            error: true, 
+            message: "Internal Server Error" 
+        });
+    }
+});
 app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
 app.use('/assets', express.static(path.join(__dirname, 'assets')));
 
