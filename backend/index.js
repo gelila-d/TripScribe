@@ -20,7 +20,16 @@ mongoose.connect(config.connectionString);
 
 const app = express();
 app.use(express.json());
-app.use(cors({origin: "*"}));
+app.use(cors({
+    origin: "http://localhost:5173",
+    methods: ["GET", "POST", "PUT", "DELETE"],
+    allowedHeaders: ["Content-Type", "Authorization"]
+}));
+
+// And update the bottom of the file:
+app.listen(8000, () => {
+    console.log("Server running on port 8000");
+});
 
 app.use(express.json()); 
 app.use(express.urlencoded({ extended: false }));
@@ -397,5 +406,5 @@ app.use('/assets', express.static(path.join(__dirname, 'assets')));
 
 
 
-app.listen(8000);
+app.listen(8080);
 module.exports = app;

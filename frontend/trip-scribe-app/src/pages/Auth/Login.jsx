@@ -30,14 +30,14 @@ const Login = () => {
       password: password,
     });
 
-    // Success Logic
+   
     if (response.data && response.data.accessToken) {
       localStorage.setItem('token', response.data.accessToken);
       navigate('/dashboard');
     }
   } catch (error) {
-    // Error Handling Logic
-    console.error("Login Error:", error); // Check your console to see the real error!
+
+    console.error("Login Error:", error); 
     
     if (error.response && error.response.data && error.response.data.message) {
       setError(error.response.data.message);

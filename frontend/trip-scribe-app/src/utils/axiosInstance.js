@@ -1,5 +1,6 @@
 import axios from 'axios';
 import { BASE_URL } from './constants';
+
 const axiosInstance = axios.create({
     baseURL: BASE_URL,
     timeout: 10000,
@@ -16,7 +17,9 @@ axiosInstance.interceptors.request.use(
         }
         return config;
     },
-    (error) => Promise.reject(error)
+    (error) => {
+        return Promise.reject(error);
+    }
 );
 
 export default axiosInstance;
