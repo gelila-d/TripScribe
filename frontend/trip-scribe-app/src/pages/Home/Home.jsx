@@ -116,9 +116,9 @@ const [openAddEditModel,setOpenAddEditModel]= useState({
     }
   }}
   appElement={document.getElementById('root')}
-  className='model-box' // Use the utility here
+  className='model-box scrollbar' 
 >
-  {/* Wrap the inside in a div with the scrollbar class */}
+ 
   <div className="h-full overflow-y-auto pr-2"> 
      <AddEditTravelStory
         type={openAddEditModel.type}

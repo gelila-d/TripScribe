@@ -1,48 +1,65 @@
-@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@100;200;300;400;500;600;700;800;900&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap');
 @import "tailwindcss";
 
+@layer base {
+  
+  .rdp-root, .rdp {
+    --rdp-accent-color: rgb(148, 92, 202) !important;
+    --rdp-accent-background-color: white !important;
+    --rdp-day_button-border-radius: 8px !important;
+  }}
 @theme {
   --font-display: 'Poppins', sans-serif;
   --color-primary: #05b6d3;
   --color-secondary: #EF863E;
 }
 
-/* 1. Define the utility first */
-@utility model-box {
-  @apply w-[90vw] md:w-[40%] h-[80vh] bg-white rounded-lg mx-auto mt-14 p-5 overflow-y-auto z-50 outline-none;
+
+.scrollbar::-webkit-scrollbar {
+  width: 5px;
+  height: 5px;
 }
 
-/* 2. Target the scrollbar of the model-box utility specifically */
-[class*="model-box"]::-webkit-scrollbar {
-  width: 6px !important;
-  display: block !important;
+.scrollbar::-webkit-scrollbar-thumb {
+  background-color: blueviolet;
+  border-radius: 3px;
 }
 
-[class*="model-box"]::-webkit-scrollbar-thumb {
-  background-color: #a068d4 !important; /* Your Purple */
-  border-radius: 10px;
+.scrollbar::-webkit-scrollbar-track {
+  background-color: rgb(172, 119, 222);
 }
 
-[class*="model-box"]::-webkit-scrollbar-track {
-  background-color: #3a1a57 !important; /* Your Dark Track */
-  border-radius: 10px;
-}
-
-/* 3. For Firefox Support */
-[class*="model-box"] {
-  scrollbar-width: thin;
-  scrollbar-color: #a068d4 #3a1a57;
-}
-/* 2. Define Utilities */
 @utility input-box {
-  @apply w-full text-sm bg-slate-100 rounded px-5 py-3 mb-4 outline-none;
+  @apply w-full text-sm bg-violet-600/5 rounded px-5 py-3 mb-4 outline-none;
 }
 
 @utility btn-primary {
-  @apply w-full bg-cyan-500 shadow-lg p-[10px] rounded-full my-1 text-white hover:bg-cyan-600 transition-all;
+  @apply w-full bg-violet-400 shadow-lg shadow-violet-200/50 p-[10px] rounded-full my-1 text-white hover:bg-violet-600;
 }
 
-@utility icon-btn {
-  @apply text-[22px] text-slate-300 cursor-pointer hover:text-red-500 transition-all;
+@utility model-box {
+ 
+  @apply w-[80vw] md:w-[40%] h-[80vh] bg-white rounded-lg mx-auto mt-14 p-5 overflow-y-scroll   z-50 relative;
 }
 
+@utility login-ui-box {
+  @apply w-80 h-[450px] rounded-full bg-violet-400 absolute rotate-45;
+}
+
+@utility btn-small {
+  @apply flex items-center gap-1 text-xs font-medium 
+         bg-violet-500
+         text-violet-50 
+         shadow-violet-100/50 
+         border-violet-100 
+         hover:bg-violet-600 
+         hover:text-white 
+         rounded px-3 py-[3px];}
+
+
+@utility btn-delete {
+  @apply bg-rose-50 text-rose-500 shadow-rose-100 border border-rose-100/0 hover:bg-rose-500 hover:text-white;
+}
+@utility input-label {
+ @apply text-xs text-slate-400;
+}
