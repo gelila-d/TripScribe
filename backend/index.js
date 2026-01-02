@@ -26,10 +26,8 @@ app.use(cors({
     allowedHeaders: ["Content-Type", "Authorization"]
 }));
 
-// And update the bottom of the file:
-app.listen(8000, () => {
-    console.log("Server running on port 8000");
-});
+
+
 
 app.use(express.json()); 
 app.use(express.urlencoded({ extended: false }));
@@ -406,5 +404,8 @@ app.use('/assets', express.static(path.join(__dirname, 'assets')));
 
 
 
-app.listen(8080);
+const PORT = process.env.PORT || 8000; 
+app.listen(PORT, () => {
+  console.log(`Server running on port ${PORT}`);
+});
 module.exports = app;
