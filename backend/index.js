@@ -18,12 +18,19 @@ const TravelStory = require('./models/travelStory.model');
 // Connect to Database
 mongoose.connect(config.connectionString);
 
+if (!fs.existsSync(path.join(__dirname, 'uploads'))) {
+    fs.mkdirSync(path.join(__dirname, 'uploads'));
+}
+if (!fs.existsSync(path.join(__dirname, 'assets'))) {
+    fs.mkdirSync(path.join(__dirname, 'assets'));
+}
+
 const app = express();
 
 // 1. CORS CONFIGURATION 
 app.use(cors({
     origin: [
-        "http://localhost:5173", 
+        "http://localhost:5173",
         "https://tripscribe.onrender.com"
     ],
     methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
@@ -64,7 +71,7 @@ app.post("/create-account", async (req, res) => {
         { expiresIn: '72h' }
     );
 
-    return res.status(201).json({ 
+    return res.status(201).json({
         error: false,
         user: { fullName: user.fullName, email: user.email },
         accessToken,
@@ -94,7 +101,7 @@ app.post("/login", async (req, res) => {
         { expiresIn: '72h' }
     );
 
-    return res.json({ 
+    return res.json({
         error: false,
         message: "Login successful.",
         user: { fullName: user.fullName, email: user.email },
@@ -119,7 +126,7 @@ app.post("/image-upload", upload.single("image"), async (req, res) => {
         if (!req.file) {
             return res.status(400).json({ error: true, message: "No file uploaded" });
         }
-       
+
         const imageUrl = `${req.protocol}://${req.get('host')}/uploads/${req.file.filename}`;
         res.status(200).json({ imageUrl });
     } catch (err) {
@@ -131,10 +138,10 @@ app.delete("/delete-image", async (req, res) => {
     if (!req.body || !req.body.imageUrl) {
         return res.status(400).json({ error: true, message: "No Image URL provided" });
     }
-    const { imageUrl } = req.body; 
+    const { imageUrl } = req.body;
     try {
         const filename = path.basename(imageUrl);
-        const filePath = path.join(__dirname, 'uploads', filename); 
+        const filePath = path.join(__dirname, 'uploads', filename);
         if (fs.existsSync(filePath)) {
             fs.unlinkSync(filePath);
             return res.status(200).json({ error: false, message: "Image deleted successfully" });
@@ -149,8 +156,8 @@ app.delete("/delete-image", async (req, res) => {
 app.post("/add-travel-story", authenticateToken, async (req, res) => {
     try {
         const { title, story, visitedLocations, imageUrl, visitedDate } = req.body;
-        const userId = req.user.userId; 
-        
+        const userId = req.user.userId;
+
         if (!title || !story || !imageUrl || !visitedDate || !visitedLocations) {
             return res.status(400).json({ error: true, message: "All fields are required." });
         }
@@ -223,7 +230,73 @@ app.delete("/delete-travel-story/:id", authenticateToken, async (req, res) => {
     }
 });
 
-const PORT = process.env.PORT || 8000; 
+// Update isFavourite
+app.put("/update-is-favourite/:id", authenticateToken, async (req, res) => {
+    const { id } = req.params;
+    const { isFavourite } = req.body;
+    const userId = req.user.userId;
+
+    try {
+        const travelStory = await TravelStory.findOne({ _id: id, userId: userId });
+        if (!travelStory) {
+            return res.status(404).json({ error: true, message: "Story not found." });
+        }
+
+        travelStory.isFavourite = isFavourite;
+        await travelStory.save();
+
+        res.status(200).json({ story: travelStory, message: "Update successful" });
+    } catch (err) {
+        res.status(500).json({ error: true, message: "Server error" });
+    }
+});
+
+// Search Travel Stories
+app.get("/search", authenticateToken, async (req, res) => {
+    const { query } = req.query;
+    const { userId } = req.user;
+
+    if (!query) {
+        return res.status(400).json({ error: true, message: "Query is required" });
+    }
+
+    try {
+        const searchResults = await TravelStory.find({
+            userId: userId,
+            $or: [
+                { title: { $regex: query, $options: "i" } },
+                { story: { $regex: query, $options: "i" } },
+                { visitedLocations: { $regex: query, $options: "i" } }
+            ],
+        }).sort({ visitedDate: -1 });
+
+        res.status(200).json({ stories: searchResults });
+    } catch (err) {
+        res.status(500).json({ error: true, message: "Server error" });
+    }
+});
+
+// Filter Travel Stories by Date Range
+app.get("/travel-stories/filter", authenticateToken, async (req, res) => {
+    const { startDate, endDate } = req.query;
+    const { userId } = req.user;
+
+    try {
+        const start = new Date(parseInt(startDate));
+        const end = new Date(parseInt(endDate));
+
+        const filteredStories = await TravelStory.find({
+            userId: userId,
+            visitedDate: { $gte: start, $lte: end },
+        }).sort({ visitedDate: -1 });
+
+        res.status(200).json({ stories: filteredStories });
+    } catch (err) {
+        res.status(500).json({ error: true, message: "Server error" });
+    }
+});
+
+const PORT = process.env.PORT || 8000;
 app.listen(PORT, () => {
     console.log(`Server running on port ${PORT}`);
 });
