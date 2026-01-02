@@ -8,17 +8,21 @@ import TravelStoryCard from '../../components/Cards/TravelStoryCard.jsx';
 import {ToastContainer, toast} from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css'
 import AddEditTravelStory from './AddEditTravelStory.jsx';
+import ViewTravelStory from './ViewTravelStory.jsx';
 
 const Home = () => {
   const navigate = useNavigate();
   const [userInfo, setUserInfo] = useState(null);
   const [allStories, setAllStories] = useState([]);
 const [openAddEditModel,setOpenAddEditModel]= useState({
-  isShowen:false,
+  isShown:false,
   type:"add",
   data:null,
 });
-
+ const [openViewModal,setOpenViewModal]= useState({
+  isShown:false,
+  date:null,
+ })
 
 
 
@@ -47,8 +51,16 @@ const [openAddEditModel,setOpenAddEditModel]= useState({
     }
   };
 
-  const handleEdit = (data) => {};
-  const handleViewStory = (data) => {};
+ const handleEdit = (data) => {
+  setOpenAddEditModel({ 
+    isShown: true, 
+    type: "edit", 
+    data: data    
+  }); 
+};
+  const handleViewStory = (data) => {
+    setOpenViewModal({isShown:true,data})
+  };
  const updateIsFavourite = async (storyData) => {
   const storyId = storyData._id;
   try {
@@ -56,10 +68,8 @@ const [openAddEditModel,setOpenAddEditModel]= useState({
       isFavourite: !storyData.isFavourite,
     });
 
-    // If the toast isn't showing, it's likely this 'if' is failing.
-    // Let's make it more robust:
     if (response.data) { 
-      toast.success("Story updated successfully!"); // Make sure ToastContainer is in App.jsx or Home.jsx
+      toast.success("Story updated successfully!");
       getAllTravelStories(); 
     }
   } catch (error) {
@@ -107,8 +117,8 @@ const [openAddEditModel,setOpenAddEditModel]= useState({
         </div>
       </div>
  <Modal
-  isOpen={openAddEditModel.isShowen}
-  onRequestClose={() => setOpenAddEditModel({ isShowen: false, type: 'add', data: null })}
+  isOpen={openAddEditModel.isShown}
+  onRequestClose={() => setOpenAddEditModel({ isShown: false, type: 'add', data: null })}
   style={{
     overlay: {
       backgroundColor: 'rgba(0,0,0,0.4)',
@@ -123,15 +133,42 @@ const [openAddEditModel,setOpenAddEditModel]= useState({
      <AddEditTravelStory
         type={openAddEditModel.type}
         storyInfo={openAddEditModel.data}
-        onClose={() => setOpenAddEditModel({ isShowen: false, type: 'add', data: null })}
+        onClose={() => setOpenAddEditModel({ isShown: false, type: 'add', data: null })}
         getAllTravelStories={getAllTravelStories}
      />
   </div>
 </Modal>
+
+
+<Modal
+  isOpen={openViewModal.isShown}
+  onRequestClose={() => setOpenViewModal({ isShown: false, data: null })} // Added for clicking outside
+  style={{ 
+    overlay: {
+      backgroundColor: 'rgba(0,0,0,0.4)',
+      zIndex: 999,
+    }
+  }}
+  appElement={document.getElementById('root')}
+  className='model-box scrollbar' 
+>
+  <ViewTravelStory
+    storyInfo={openViewModal.data || null}
+    
+    onClose={() => {
+      setOpenViewModal((prevState) => ({ ...prevState, isShown: false }));
+    }}
+    onEditClick={() => {
+      setOpenViewModal((prevState) => ({ ...prevState, isShown: false }));
+      handleEdit(openViewModal.data || null);
+    }}
+    onDeleteClick={() => {}}
+  />
+</Modal>
    <button 
   className='w-16 h-16 flex items-center justify-center rounded-full bg-violet-500 hover:bg-violet-600 fixed right-10 bottom-10 shadow-2xl z-50'
   onClick={() => {
-    setOpenAddEditModel({ isShowen: true, type: "add", data: null });
+    setOpenAddEditModel({ isShown: true, type: "add", data: null });
   }}
 >
   <MdAdd className='text-[32px] text-white' />
