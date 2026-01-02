@@ -8,7 +8,7 @@ import axiosInstance from '../../utils/axiosInstance';
 import uploadImage from '../../utils/uploadImage';
 import { toast } from 'react-toastify';
 
-const AddEditTravelStory = ({ storyInfo, type, onClose, getAllTravelStories }) => {
+const AddEditTravelStory = ({ storyInfo, type, onClose, onAddStory, onUpdateStory, onDeleteStory }) => {
   const [title, setTitle] = useState(storyInfo?.title || "");
   const [story, setStory] = useState(storyInfo?.story || "");
   const [visitedDate, setVisitedDate] = useState(storyInfo?.visitedDate || null);
@@ -24,131 +24,51 @@ const AddEditTravelStory = ({ storyInfo, type, onClose, getAllTravelStories }) =
       setVisitedLocation(storyInfo.visitedLocations);
       setStoryImg(storyInfo.imageUrl);
     }
-  }, []);
+  }, [type, storyInfo]);
 
-  // DELETE IMAGE ONLY (Used by the ImageSelector "X" button)
   const handleDeleteImg = async () => {
     try {
       if (typeof storyImg === 'string') {
         const response = await axiosInstance.delete("/delete-image", {
           data: { imageUrl: storyImg }
         });
-
         if (response.data && !response.data.error) {
           setStoryImg(null);
-          toast.success("Image removed from server");
+          toast.success("Image removed");
         }
       } else {
         setStoryImg(null);
       }
     } catch (error) {
-      console.error("Image Delete Error:", error);
-      toast.error("Failed to delete image from server");
+      toast.error("Failed to delete image");
     }
   };
 
-  // DELETE FULL STORY (Story + Image)
-  const deleteTravelStory = async () => {
-    const storyId = storyInfo?._id;
-   
-    const imageUrl = storyInfo?.imageUrl;
-
-    try {
-      // 1. Delete the Story from the Database
-      const response = await axiosInstance.delete("/delete-travel-story/" + storyId);
-
-      if (response.data && !response.data.error) {
-        // 2. If the database deletion is successful, delete the physical image file
-        if (imageUrl) {
-          try {
-            await axiosInstance.delete("/delete-image", {
-              data: { imageUrl: imageUrl }
-            });
-          } catch (imgErr) {
-            console.error("The story was deleted, but the image file cleanup failed:", imgErr);
-           
-          }
-        }
-
-        toast.success("Story and associated image deleted successfully");
-        getAllTravelStories(); // Refresh list
-        onClose(); // Close modal
-      }
-    } catch (error) {
-      const message = error.response?.data?.message || "Delete failed";
-      setError(message);
-      toast.error(message);
-    }
-  };
-
-  const addNewTravelStory = async () => {
-    try {
-      let imageUrl = '';
-      if (storyImg && typeof storyImg !== 'string') {
-        const imgUploadRes = await uploadImage(storyImg);
-        imageUrl = imgUploadRes.imageUrl || "";
-      }
-
-      const payload = {
-        title,
-        story,
-        imageUrl: imageUrl || "",
-        visitedLocations: visitedLocation,
-        visitedDate: visitedDate ? moment(visitedDate).valueOf() : moment().valueOf(),
-      };
-
-      const response = await axiosInstance.post("/add-travel-story", payload);
-
-      if (response.data && !response.data.error) {
-        toast.success("Story added successfully");
-        getAllTravelStories();
-        onClose();
-      }
-    } catch (error) {
-      setError(error.response?.data?.message || "Something went wrong");
-    }
-  };
-
-  const updateTravelStory = async () => {
-    const storyId = storyInfo?._id;
-    try {
-      let imageUrl = storyImg;
-
-      // Handle new image upload during edit
-      if (typeof storyImg === "object" && storyImg !== null) {
-        const imgUploadRes = await uploadImage(storyImg);
-        imageUrl = imgUploadRes.imageUrl || "";
-      }
-
-      const postData = {
-        title,
-        story,
-        imageUrl: imageUrl || "",
-        visitedLocations: visitedLocation,
-        visitedDate: visitedDate ? moment(visitedDate).valueOf() : moment().valueOf(),
-      };
-
-      const response = await axiosInstance.put("/edit-travel-story/" + storyId, postData);
-
-      if (response.data && !response.data.error) {
-        toast.success("Story updated successfully");
-        getAllTravelStories();
-        onClose();
-      }
-    } catch (error) {
-      setError(error.response?.data?.message || "Update failed");
-    }
-  };
-
-  const handleAddOrUpdateClick = () => {
+  const handleAddOrUpdateClick = async () => {
     if (!title) { setError("Please enter the title"); return; }
     if (!story) { setError("Please enter the story"); return; }
     setError("");
 
+    let imageUrl = storyImg;
+
+    // Handle Image Upload if it's a file object
+    if (storyImg && typeof storyImg === 'object') {
+      const imgUploadRes = await uploadImage(storyImg);
+      imageUrl = imgUploadRes.imageUrl || "";
+    }
+
+    const payload = {
+      title,
+      story,
+      imageUrl: imageUrl || "",
+      visitedLocations: visitedLocation,
+      visitedDate: visitedDate ? moment(visitedDate).valueOf() : moment().valueOf(),
+    };
+
     if (type === 'edit') {
-      updateTravelStory();
+      onUpdateStory(storyInfo._id, payload);
     } else {
-      addNewTravelStory();
+      onAddStory(payload);
     }
   };
 
@@ -169,14 +89,11 @@ const AddEditTravelStory = ({ storyInfo, type, onClose, getAllTravelStories }) =
               <button className='btn-small' onClick={handleAddOrUpdateClick}>
                 <MdUpdate className='text-xl' /> UPDATE STORY
               </button>
-
-              {/* The main Delete button */}
-              <button className='btn-small bg-red-50 text-red-500 hover:bg-red-100 border-red-100' onClick={deleteTravelStory}>
+              <button className='btn-small bg-red-50 text-red-500 hover:bg-red-100 border-red-100' onClick={() => onDeleteStory(storyInfo)}>
                 <MdDeleteOutline className='text-xl' /> DELETE
               </button>
             </>
           )}
-          
           <button onClick={onClose}>
             <MdClose className='text-xl text-slate-400' />
           </button>
