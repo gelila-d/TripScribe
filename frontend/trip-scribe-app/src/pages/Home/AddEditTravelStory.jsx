@@ -15,6 +15,7 @@ const AddEditTravelStory = ({ storyInfo, type, onClose, onAddStory, onUpdateStor
   const [storyImg, setStoryImg] = useState(storyInfo?.imageUrl || null);
   const [visitedLocation, setVisitedLocation] = useState(storyInfo?.visitedLocations || []);
   const [error, setError] = useState("");
+  const [loading, setLoading] = useState(false); // New Loading State
 
   useEffect(() => {
     if (type === "edit" && storyInfo) {
@@ -30,7 +31,7 @@ const AddEditTravelStory = ({ storyInfo, type, onClose, onAddStory, onUpdateStor
     try {
       if (typeof storyImg === 'string') {
         const response = await axiosInstance.delete("/delete-image", {
-          data: { imageUrl: storyImg }
+          params: { imageUrl: storyImg }
         });
         if (response.data && !response.data.error) {
           setStoryImg(null);
@@ -48,27 +49,33 @@ const AddEditTravelStory = ({ storyInfo, type, onClose, onAddStory, onUpdateStor
     if (!title) { setError("Please enter the title"); return; }
     if (!story) { setError("Please enter the story"); return; }
     setError("");
+    setLoading(true); // Start Loading
 
-    let imageUrl = storyImg;
+    try {
+      let imageUrl = storyImg;
 
-    // Handle Image Upload if it's a file object
-    if (storyImg && typeof storyImg === 'object') {
-      const imgUploadRes = await uploadImage(storyImg);
-      imageUrl = imgUploadRes.imageUrl || "";
-    }
+      if (storyImg && typeof storyImg === 'object') {
+        const imgUploadRes = await uploadImage(storyImg);
+        imageUrl = imgUploadRes.imageUrl || "";
+      }
 
-    const payload = {
-      title,
-      story,
-      imageUrl: imageUrl || "",
-      visitedLocations: visitedLocation,
-      visitedDate: visitedDate ? moment(visitedDate).valueOf() : moment().valueOf(),
-    };
+      const payload = {
+        title,
+        story,
+        imageUrl: imageUrl || "",
+        visitedLocations: visitedLocation,
+        visitedDate: visitedDate ? moment(visitedDate).valueOf() : moment().valueOf(),
+      };
 
-    if (type === 'edit') {
-      onUpdateStory(storyInfo._id, payload);
-    } else {
-      onAddStory(payload);
+      if (type === 'edit') {
+        await onUpdateStory(storyInfo._id, payload);
+      } else {
+        await onAddStory(payload);
+      }
+    } catch (err) {
+      toast.error("An error occurred. Please try again.");
+    } finally {
+      setLoading(false); // Stop Loading
     }
   };
 
@@ -81,15 +88,29 @@ const AddEditTravelStory = ({ storyInfo, type, onClose, onAddStory, onUpdateStor
         
         <div className='flex items-center gap-3 bg-violet-50/50 p-2 rounded-l-lg'>
           {type === 'add' ? (
-            <button className='btn-small' onClick={handleAddOrUpdateClick}>
-              <MdAdd className='text-lg' /> ADD STORY
+            <button 
+              className={`btn-small flex items-center gap-2 ${loading ? 'opacity-70 cursor-not-allowed' : ''}`} 
+              onClick={handleAddOrUpdateClick}
+              disabled={loading}
+            >
+              {loading ? <div className="w-3 h-3 border-2 border-white border-t-transparent rounded-full animate-spin"></div> : <MdAdd className='text-lg' />} 
+              {loading ? "SAVING..." : "ADD STORY"}
             </button>
           ) : (
             <>
-              <button className='btn-small' onClick={handleAddOrUpdateClick}>
-                <MdUpdate className='text-xl' /> UPDATE STORY
+              <button 
+                className={`btn-small flex items-center gap-2 ${loading ? 'opacity-70 cursor-not-allowed' : ''}`} 
+                onClick={handleAddOrUpdateClick}
+                disabled={loading}
+              >
+                {loading ? <div className="w-3 h-3 border-2 border-white border-t-transparent rounded-full animate-spin"></div> : <MdUpdate className='text-xl' />} 
+                {loading ? "SAVING..." : "UPDATE STORY"}
               </button>
-              <button className='btn-small bg-red-50 text-red-500 hover:bg-red-100 border-red-100' onClick={() => onDeleteStory(storyInfo)}>
+              <button 
+                className='btn-small bg-red-50 text-red-500 hover:bg-red-100 border-red-100' 
+                onClick={() => onDeleteStory(storyInfo)}
+                disabled={loading}
+              >
                 <MdDeleteOutline className='text-xl' /> DELETE
               </button>
             </>
@@ -109,6 +130,7 @@ const AddEditTravelStory = ({ storyInfo, type, onClose, onAddStory, onUpdateStor
           className='text-slate-950 outline-none text-2xl font-semibold' 
           placeholder='A day at ....'
           value={title} 
+          disabled={loading}
           onChange={({ target }) => setTitle(target.value)} 
         />
 
@@ -129,6 +151,7 @@ const AddEditTravelStory = ({ storyInfo, type, onClose, onAddStory, onUpdateStor
             placeholder='Your Story'
             rows={10} 
             value={story} 
+            disabled={loading}
             onChange={({ target }) => setStory(target.value)} 
           />
         </div>
