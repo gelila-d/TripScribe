@@ -15,7 +15,7 @@ const AddEditTravelStory = ({ storyInfo, type, onClose, onAddStory, onUpdateStor
   const [storyImg, setStoryImg] = useState(storyInfo?.imageUrl || null);
   const [visitedLocation, setVisitedLocation] = useState(storyInfo?.visitedLocations || []);
   const [error, setError] = useState("");
-  const [loading, setLoading] = useState(false); // New Loading State
+  const [loading, setLoading] = useState(false);
 
   useEffect(() => {
     if (type === "edit" && storyInfo) {
@@ -49,20 +49,24 @@ const AddEditTravelStory = ({ storyInfo, type, onClose, onAddStory, onUpdateStor
     if (!title) { setError("Please enter the title"); return; }
     if (!story) { setError("Please enter the story"); return; }
     setError("");
-    setLoading(true); // Start Loading
+    setLoading(true);
 
     try {
-      let imageUrl = storyImg;
+      let imageUrl = "";
 
+      // If storyImg is a new file (object), upload it first
       if (storyImg && typeof storyImg === 'object') {
         const imgUploadRes = await uploadImage(storyImg);
         imageUrl = imgUploadRes.imageUrl || "";
+      } else {
+        // If it's already a string, it's an existing URL
+        imageUrl = storyImg || "";
       }
 
       const payload = {
         title,
         story,
-        imageUrl: imageUrl || "",
+        imageUrl: imageUrl,
         visitedLocations: visitedLocation,
         visitedDate: visitedDate ? moment(visitedDate).valueOf() : moment().valueOf(),
       };
@@ -75,7 +79,7 @@ const AddEditTravelStory = ({ storyInfo, type, onClose, onAddStory, onUpdateStor
     } catch (err) {
       toast.error("An error occurred. Please try again.");
     } finally {
-      setLoading(false); // Stop Loading
+      setLoading(false);
     }
   };
 
@@ -106,16 +110,22 @@ const AddEditTravelStory = ({ storyInfo, type, onClose, onAddStory, onUpdateStor
                 {loading ? <div className="w-3 h-3 border-2 border-white border-t-transparent rounded-full animate-spin"></div> : <MdUpdate className='text-xl' />} 
                 {loading ? "SAVING..." : "UPDATE STORY"}
               </button>
+              
               <button 
-                className='btn-small bg-red-50 text-red-500 hover:bg-red-100 border-red-100' 
+                className={`btn-small bg-red-50 text-red-500 hover:bg-red-100 border-red-100 flex items-center gap-2 ${loading ? 'opacity-70 cursor-not-allowed' : ''}`} 
                 onClick={() => onDeleteStory(storyInfo)}
                 disabled={loading}
               >
-                <MdDeleteOutline className='text-xl' /> DELETE
+                {loading ? (
+                  <div className="w-3 h-3 border-2 border-red-500 border-t-transparent rounded-full animate-spin"></div>
+                ) : (
+                  <MdDeleteOutline className='text-xl' />
+                )} 
+                {loading ? "DELETING..." : "DELETE"}
               </button>
             </>
           )}
-          <button onClick={onClose}>
+          <button onClick={onClose} disabled={loading}>
             <MdClose className='text-xl text-slate-400' />
           </button>
         </div>

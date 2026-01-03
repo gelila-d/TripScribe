@@ -23,7 +23,7 @@ const Home = () => {
   const [searchQuery, setSearchQuery] = useState('');
   const [filterType, setFilterType] = useState(''); 
   const [dateRange, setDateRange] = useState({ from: null, to: null });
-  const [loading, setLoading] = useState(false); // Loading State
+  const [loading, setLoading] = useState(false); 
 
   const [openAddEditModel, setOpenAddEditModel] = useState({ isShown: false, type: "add", data: null });
   const [openViewModal, setOpenViewModal] = useState({ isShown: false, data: null });
@@ -79,15 +79,19 @@ const Home = () => {
   };
 
   const handleDeleteStory = async (data) => {
+    setLoading(true); // START LOADING FOR DELETE
     try {
       const response = await axiosInstance.delete("/delete-travel-story/" + data._id);
       if (response.data && !response.data.error) {
         toast.error("Story deleted successfully");
         getAllTravelStories();
         setOpenViewModal({ isShown: false, data: null });
+        setOpenAddEditModel({ isShown: false, type: "add", data: null });
       }
     } catch (error) {
       toast.error("Delete failed");
+    } finally {
+      setLoading(false); // STOP LOADING
     }
   };
 
@@ -165,7 +169,7 @@ const Home = () => {
             {loading ? (
               <div className="flex flex-col items-center justify-center py-20">
                 <div className="w-12 h-12 border-4 border-violet-500 border-t-transparent rounded-full animate-spin"></div>
-                <p className="mt-4 text-slate-500 font-medium">Fetching your stories...</p>
+                <p className="mt-4 text-slate-500 font-medium">Processing...</p>
               </div>
             ) : allStories.length > 0 ? (
               <div className='grid grid-cols-2 gap-4'>
@@ -197,11 +201,11 @@ const Home = () => {
         </div>
       </div>
 
-      <Modal isOpen={openAddEditModel.isShown} onRequestClose={() => setOpenAddEditModel({ isShown: false, type: 'add', data: null })} style={{ overlay: { backgroundColor: 'rgba(0,0,0,0.4)', zIndex: 999 } }} appElement={document.getElementById('root')} className='model-box scrollbar'>
+      <Modal isOpen={openAddEditModel.isShown} onRequestClose={() => !loading && setOpenAddEditModel({ isShown: false, type: 'add', data: null })} style={{ overlay: { backgroundColor: 'rgba(0,0,0,0.4)', zIndex: 999 } }} appElement={document.getElementById('root')} className='model-box scrollbar'>
         <AddEditTravelStory type={openAddEditModel.type} storyInfo={openAddEditModel.data} onClose={() => setOpenAddEditModel({ isShown: false, type: 'add', data: null })} onAddStory={handleAddStory} onUpdateStory={handleUpdateStory} onDeleteStory={handleDeleteStory} />
       </Modal>
 
-      <Modal isOpen={openViewModal.isShown} onRequestClose={() => setOpenViewModal({ isShown: false, data: null })} style={{ overlay: { backgroundColor: 'rgba(0,0,0,0.4)', zIndex: 999 } }} appElement={document.getElementById('root')} className='model-box scrollbar'>
+      <Modal isOpen={openViewModal.isShown} onRequestClose={() => !loading && setOpenViewModal({ isShown: false, data: null })} style={{ overlay: { backgroundColor: 'rgba(0,0,0,0.4)', zIndex: 999 } }} appElement={document.getElementById('root')} className='model-box scrollbar'>
         <ViewTravelStory storyInfo={openViewModal.data || null} onClose={() => setOpenViewModal({ isShown: false, data: null })} onEditClick={() => { const d = openViewModal.data; setOpenViewModal({ isShown: false, data: null }); setOpenAddEditModel({ isShown: true, type: "edit", data: d }); }} onDeleteClick={() => handleDeleteStory(openViewModal.data)} />
       </Modal>
 
