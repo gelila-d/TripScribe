@@ -7,7 +7,7 @@ const TagInput = ({ tags = [], setTags }) => {
 
   const addNewTag = () => {
     if (inputValue.trim() !== "") {
-      
+
       setTags([...tags, inputValue.trim()]);
       setInputValue("");
     }
@@ -29,14 +29,14 @@ const TagInput = ({ tags = [], setTags }) => {
 
   return (
     <div>
-       
+
       <div className="flex flex-wrap gap-2 mb-2">
         {tags.map((tag, index) => (
-          <span 
-            key={index} 
+          <span
+            key={index}
             className="flex items-center gap-2 bg-purple-200/40 px-3 py-1 rounded text-sm text-purple-600"
           >
-            <GrMapLocation className='text-sm'/>
+            <GrMapLocation className='text-sm' />
             {tag}
 
             <button onClick={() => handleRemoveTag(tag)}>
@@ -47,20 +47,20 @@ const TagInput = ({ tags = [], setTags }) => {
       </div>
 
       <div className='flex items-center gap-4 mt-3'>
-        <input 
+        <input
           type='text'
           value={inputValue}
-          className='text-sm bg-transparent border px-3 py-2 rounded outline-none'
+          className='w-full md:w-auto text-sm bg-transparent border px-3 py-2 rounded outline-none'
           placeholder='Add Location'
           onChange={handleInputChange}
           onKeyDown={handleKeyDown}
         />
 
-        <button 
-          className='w-8 h-8 flex items-center justify-center rounded border border-purple-500 hover:bg-purple-500 group' 
+        <button
+          className='w-8 h-8 flex items-center justify-center rounded border border-purple-500 hover:bg-purple-500 group'
           onClick={addNewTag}
         >
-          <MdAdd className='text-2xl text-purple-500 group-hover:text-white'/>
+          <MdAdd className='text-2xl text-purple-500 group-hover:text-white' />
         </button>
       </div>
     </div>
