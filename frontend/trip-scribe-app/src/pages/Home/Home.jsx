@@ -1,5 +1,5 @@
-import React, { useEffect, useState } from 'react'; 
-import { useNavigate } from 'react-router-dom'; 
+import React, { useEffect, useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import Navbar from '../../components/Navbar.jsx';
 import axiosInstance from '../../utils/axiosInstance.js';
 import { MdAdd } from 'react-icons/md';
@@ -13,7 +13,7 @@ import ViewTravelStory from './ViewTravelStory.jsx';
 import { DayPicker } from 'react-day-picker';
 import FilterInfoTitle from '../../components/Cards/FilterInfoTitle.jsx';
 
-import NoStoryImg from "../../assets/images/no-story.png"; 
+import NoStoryImg from "../../assets/images/no-story.png";
 import NoSearchImg from "../../assets/images/no-search.png";
 
 const Home = () => {
@@ -21,9 +21,9 @@ const Home = () => {
   const [userInfo, setUserInfo] = useState(null);
   const [allStories, setAllStories] = useState([]);
   const [searchQuery, setSearchQuery] = useState('');
-  const [filterType, setFilterType] = useState(''); 
+  const [filterType, setFilterType] = useState('');
   const [dateRange, setDateRange] = useState({ from: null, to: null });
-  const [loading, setLoading] = useState(false); 
+  const [loading, setLoading] = useState(false);
 
   const [openAddEditModel, setOpenAddEditModel] = useState({ isShown: false, type: "add", data: null });
   const [openViewModal, setOpenViewModal] = useState({ isShown: false, data: null });
@@ -100,7 +100,7 @@ const Home = () => {
       const response = await axiosInstance.put(`/update-is-favourite/${storyData._id}`, {
         isFavourite: !storyData.isFavourite,
       });
-      if (response.data) { 
+      if (response.data) {
         toast.success("Updated!");
         refreshData();
       }
@@ -130,7 +130,7 @@ const Home = () => {
     setFilterType("");
     setSearchQuery("");
     setDateRange({ from: null, to: null });
-    getAllTravelStories(); 
+    getAllTravelStories();
   };
 
   const filterStoriesByDate = async (day) => {
@@ -155,16 +155,16 @@ const Home = () => {
   useEffect(() => {
     getUserInfo();
     getAllTravelStories();
-  }, []); 
+  }, []);
 
   return (
     <>
       <Navbar userInfo={userInfo} searchQuery={searchQuery} setSearchQuery={setSearchQuery} onSearchNote={onSearchStory} handleClearSearch={handleClearSearch} />
-      
-      <div className='container mx-auto py-10'>
+
+      <div className='container mx-auto py-10 px-6'>
         <FilterInfoTitle filterType={filterType} filterDates={dateRange} onClear={handleClearSearch} />
-        
-        <div className='flex gap-7'>
+
+        <div className='flex flex-col-reverse lg:flex-row gap-7'>
           <div className='flex-1'>
             {loading ? (
               <div className="flex flex-col items-center justify-center py-20">
@@ -172,18 +172,18 @@ const Home = () => {
                 <p className="mt-4 text-slate-500 font-medium">Processing...</p>
               </div>
             ) : allStories.length > 0 ? (
-              <div className='grid grid-cols-2 gap-4'>
+              <div className='grid grid-cols-1 md:grid-cols-2 gap-4'>
                 {allStories.map((item) => (
                   <TravelStoryCard
-                    key={item._id} 
-                    imgUrl={item.imageUrl} 
+                    key={item._id}
+                    imgUrl={item.imageUrl}
                     title={item.title}
                     story={item.story}
-                    date={item.visitedDate} 
-                    visitedLocation={item.visitedLocations} 
+                    date={item.visitedDate}
+                    visitedLocation={item.visitedLocations}
                     isFavourite={item.isFavourite}
                     onEdit={() => setOpenAddEditModel({ isShown: true, type: "edit", data: item })}
-                    onClick={() => setOpenViewModal({ isShown: true, data: item })} 
+                    onClick={() => setOpenViewModal({ isShown: true, data: item })}
                     onFavouriteClick={() => updateIsFavourite(item)}
                   />
                 ))}
@@ -193,7 +193,7 @@ const Home = () => {
             )}
           </div>
 
-          <div className='w-[320px]'>
+          <div className='w-full lg:w-[320px]'>
             <div className='bg-white border border-slate-200 rounded-lg shadow-lg p-4'>
               <DayPicker mode="range" selected={dateRange} onSelect={handleDayClick} pagedNavigation />
             </div>

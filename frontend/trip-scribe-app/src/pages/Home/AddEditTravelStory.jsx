@@ -85,34 +85,34 @@ const AddEditTravelStory = ({ storyInfo, type, onClose, onAddStory, onUpdateStor
 
   return (
     <div className='relative'>
-      <div className='flex items-center justify-between'>
+      <div className='flex flex-col md:flex-row items-start md:items-center justify-between gap-3'>
         <h5 className='text-xl font-medium text-slate-700'>
           {type === "add" ? "Add Story" : "Update Story"}
         </h5>
-        
-        <div className='flex items-center gap-3 bg-violet-50/50 p-2 rounded-l-lg'>
+
+        <div className='flex items-center gap-3 bg-violet-50/50 p-2 rounded-lg w-full md:w-auto overflow-x-auto'>
           {type === 'add' ? (
-            <button 
-              className={`btn-small flex items-center gap-2 ${loading ? 'opacity-70 cursor-not-allowed' : ''}`} 
+            <button
+              className={`btn-small flex items-center gap-2 whitespace-nowrap ${loading ? 'opacity-70 cursor-not-allowed' : ''}`}
               onClick={handleAddOrUpdateClick}
               disabled={loading}
             >
-              {loading ? <div className="w-3 h-3 border-2 border-white border-t-transparent rounded-full animate-spin"></div> : <MdAdd className='text-lg' />} 
+              {loading ? <div className="w-3 h-3 border-2 border-white border-t-transparent rounded-full animate-spin"></div> : <MdAdd className='text-lg' />}
               {loading ? "SAVING..." : "ADD STORY"}
             </button>
           ) : (
             <>
-              <button 
-                className={`btn-small flex items-center gap-2 ${loading ? 'opacity-70 cursor-not-allowed' : ''}`} 
+              <button
+                className={`btn-small flex items-center gap-2 whitespace-nowrap ${loading ? 'opacity-70 cursor-not-allowed' : ''}`}
                 onClick={handleAddOrUpdateClick}
                 disabled={loading}
               >
-                {loading ? <div className="w-3 h-3 border-2 border-white border-t-transparent rounded-full animate-spin"></div> : <MdUpdate className='text-xl' />} 
+                {loading ? <div className="w-3 h-3 border-2 border-white border-t-transparent rounded-full animate-spin"></div> : <MdUpdate className='text-xl' />}
                 {loading ? "SAVING..." : "UPDATE STORY"}
               </button>
-              
-              <button 
-                className={`btn-small bg-red-50 text-red-500 hover:bg-red-100 border-red-100 flex items-center gap-2 ${loading ? 'opacity-70 cursor-not-allowed' : ''}`} 
+
+              <button
+                className={`btn-small bg-red-50 text-red-500 hover:bg-red-100 border-red-100 flex items-center gap-2 whitespace-nowrap ${loading ? 'opacity-70 cursor-not-allowed' : ''}`}
                 onClick={() => onDeleteStory(storyInfo)}
                 disabled={loading}
               >
@@ -120,12 +120,12 @@ const AddEditTravelStory = ({ storyInfo, type, onClose, onAddStory, onUpdateStor
                   <div className="w-3 h-3 border-2 border-red-500 border-t-transparent rounded-full animate-spin"></div>
                 ) : (
                   <MdDeleteOutline className='text-xl' />
-                )} 
+                )}
                 {loading ? "DELETING..." : "DELETE"}
               </button>
             </>
           )}
-          <button onClick={onClose} disabled={loading}>
+          <button onClick={onClose} disabled={loading} className='ml-auto'>
             <MdClose className='text-xl text-slate-400' />
           </button>
         </div>
@@ -135,34 +135,34 @@ const AddEditTravelStory = ({ storyInfo, type, onClose, onAddStory, onUpdateStor
 
       <div className='flex-1 flex flex-col gap-2 pt-4'>
         <label className='input-label'>TITLE</label>
-        <input 
-          type='text' 
-          className='text-slate-950 outline-none text-2xl font-semibold' 
+        <input
+          type='text'
+          className='text-slate-950 outline-none text-xl md:text-2xl font-semibold'
           placeholder='A day at ....'
-          value={title} 
+          value={title}
           disabled={loading}
-          onChange={({ target }) => setTitle(target.value)} 
+          onChange={({ target }) => setTitle(target.value)}
         />
 
         <div className='my-3'>
           <DateSelector date={visitedDate} setDate={setVisitedDate} />
         </div>
 
-        <ImageSelector 
-          image={storyImg} 
-          setImage={setStoryImg} 
-          handleDeleteImg={handleDeleteImg} 
+        <ImageSelector
+          image={storyImg}
+          setImage={setStoryImg}
+          handleDeleteImg={handleDeleteImg}
         />
 
         <div className='flex flex-col gap-2 mt-4'>
           <label className='input-label'>STORY</label>
-          <textarea 
-            className='text-sm text-slate-950 bg-slate-50 p-2 rounded outline-none resize-none' 
+          <textarea
+            className='text-sm text-slate-950 bg-slate-50 p-2 rounded outline-none resize-none'
             placeholder='Your Story'
-            rows={10} 
-            value={story} 
+            rows={10}
+            value={story}
             disabled={loading}
-            onChange={({ target }) => setStory(target.value)} 
+            onChange={({ target }) => setStory(target.value)}
           />
         </div>
 

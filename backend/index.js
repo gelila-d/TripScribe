@@ -1,5 +1,4 @@
 require('dotenv').config();
-const config = require('./config.json');
 const mongoose = require('mongoose');
 const bcrypt = require('bcrypt');
 const express = require('express');
@@ -13,7 +12,7 @@ const { authenticateToken } = require('./utilities');
 const User = require('./models/user.model');
 const TravelStory = require('./models/travelStory.model');
 
-mongoose.connect(config.connectionString);
+mongoose.connect(process.env.MONGODB_URI);
 
 // Create folders if they don't exist
 const uploadsDir = path.join(__dirname, 'uploads');
@@ -22,7 +21,7 @@ if (!fs.existsSync(uploadsDir)) fs.mkdirSync(uploadsDir);
 const app = express();
 
 app.use(cors({
-    origin: ["http://localhost:5173", "https://tripscribe.onrender.com"],
+    origin: [process.env.FRONTEND_URL, "http://localhost:5173"],
     methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
     allowedHeaders: ["Content-Type", "Authorization"],
     credentials: true
@@ -102,9 +101,9 @@ app.post("/add-travel-story", authenticateToken, async (req, res) => {
 
     try {
         const newStory = new TravelStory({
-            title, story, visitedLocations, imageUrl, 
-            visitedDate: new Date(Number(visitedDate)), 
-            userId: req.user.userId 
+            title, story, visitedLocations, imageUrl,
+            visitedDate: new Date(Number(visitedDate)),
+            userId: req.user.userId
         });
         await newStory.save();
         res.status(201).json({ error: false, message: "Story added", story: newStory });
@@ -121,7 +120,7 @@ app.get("/get-all-stories", authenticateToken, async (req, res) => {
 app.put("/edit-travel-story/:id", authenticateToken, async (req, res) => {
     const { id } = req.params;
     const { title, story, visitedLocations, imageUrl, visitedDate } = req.body;
-    
+
     try {
         const travelStory = await TravelStory.findOne({ _id: id, userId: req.user.userId });
         if (!travelStory) return res.status(404).json({ message: "Story not found" });
