@@ -88,6 +88,12 @@ app.post("/image-upload", upload.single("image"), async (req, res) => {
 app.delete("/delete-image", async (req, res) => {
     const { imageUrl } = req.query;
     if (!imageUrl) return res.status(400).json({ message: "No URL provided" });
+
+    // Don't delete placeholder or asset images
+    if (imageUrl.includes('/assets/')) {
+        return res.status(200).json({ message: "Asset images cannot be deleted" });
+    }
+
     try {
         const filename = path.basename(imageUrl);
         const filePath = path.join(__dirname, 'uploads', filename);
@@ -168,6 +174,11 @@ app.put("/update-is-favourite/:id", authenticateToken, async (req, res) => {
 
 app.get("/search", authenticateToken, async (req, res) => {
     const { query } = req.query;
+
+    if (!query) {
+        return res.status(400).json({ error: true, message: "Search query is required" });
+    }
+
     try {
         const searchResults = await TravelStory.find({
             userId: req.user.userId,
