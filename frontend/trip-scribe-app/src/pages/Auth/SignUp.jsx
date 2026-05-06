@@ -51,7 +51,7 @@ const SignUp = () => {
         // This will catch "User already exists" from your backend
         setError(error.response.data.message);
       } else if (error.code === "ERR_NETWORK") {
-        setError("Network Error: Is your backend running on port 8080?");
+        setError("Network Error: Is your backend running on port 8000?");
       } else {
         setError('An error occurred. Please try again later.');
       }
