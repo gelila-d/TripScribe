@@ -21,7 +21,7 @@ if (!fs.existsSync(uploadsDir)) fs.mkdirSync(uploadsDir);
 const app = express();
 
 app.use(cors({
-    origin: [process.env.FRONTEND_URL, "http://localhost:5173"],
+    origin: [process.env.FRONTEND_URL, "http://localhost:5173", "http://localhost:5174", "http://127.0.0.1:5173"],
     methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
     allowedHeaders: ["Content-Type", "Authorization"],
     credentials: true
@@ -38,11 +38,11 @@ app.post("/create-account", async (req, res) => {
     const { fullName, email, password } = req.body;
     if (!fullName || !email || !password) return res.status(400).json({ message: "All fields required" });
 
-    const isUser = await User.findOne({ email });
+    const isUser = await User.findOne({ email: email.toLowerCase() });
     if (isUser) return res.status(400).json({ message: "User already exists" });
 
     const hashedPassword = await bcrypt.hash(password, 10);
-    const user = new User({ fullName, email, password: hashedPassword });
+    const user = new User({ fullName, email: email.toLowerCase(), password: hashedPassword });
     await user.save();
 
     const accessToken = jwt.sign({ userId: user._id }, process.env.ACCESS_TOKEN_SECRET, { expiresIn: '72h' });
@@ -51,7 +51,12 @@ app.post("/create-account", async (req, res) => {
 
 app.post("/login", async (req, res) => {
     const { email, password } = req.body;
-    const user = await User.findOne({ email });
+
+    if (!email || !password) {
+        return res.status(400).json({ message: "Email and password are required" });
+    }
+
+    const user = await User.findOne({ email: email.toLowerCase() });
     if (!user) return res.status(400).json({ message: "User not found" });
 
     const isPasswordValid = await bcrypt.compare(password, user.password);
