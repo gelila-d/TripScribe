@@ -69,9 +69,13 @@ app.post("/login", async (req, res) => {
 });
 
 app.get("/get-user", authenticateToken, async (req, res) => {
-    const user = await User.findById(req.user.userId).select("-password");
-    if (!user) return res.sendStatus(401);
-    return res.json({ error: false, user });
+    try {
+        const user = await User.findById(req.user.userId).select("-password");
+        if (!user) return res.sendStatus(401);
+        return res.json({ error: false, user });
+    } catch (error) {
+        return res.status(500).json({ error: true, message: "Server error" });
+    }
 });
 
 // --- IMAGE HANDLING ---
@@ -79,7 +83,7 @@ app.get("/get-user", authenticateToken, async (req, res) => {
 app.post("/image-upload", upload.single("image"), async (req, res) => {
     try {
         if (!req.file) return res.status(400).json({ error: true, message: "No file uploaded" });
-        const protocol = req.get('host').includes('localhost') ? 'http' : 'https';
+        const protocol = req.get('host').includes('localhost') || req.get('host').includes('127.0.0.1') ? 'http' : 'https';
         const imageUrl = `${protocol}://${req.get('host')}/uploads/${req.file.filename}`;
         res.status(200).json({ imageUrl });
     } catch (err) { res.status(500).json({ message: "Upload error" }); }
@@ -138,7 +142,7 @@ app.put("/edit-travel-story/:id", authenticateToken, async (req, res) => {
         const travelStory = await TravelStory.findOne({ _id: id, userId: req.user.userId });
         if (!travelStory) return res.status(404).json({ message: "Story not found" });
 
-        const protocol = req.get('host').includes('localhost') ? 'http' : 'https';
+        const protocol = req.get('host').includes('localhost') || req.get('host').includes('127.0.0.1') ? 'http' : 'https';
         const placeholderImgUrl = `${protocol}://${req.get('host')}/assets/placeholder.jpg`;
 
         travelStory.title = title;

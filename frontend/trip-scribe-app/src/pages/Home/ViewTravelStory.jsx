@@ -12,6 +12,10 @@ const ViewTravelStory = ({ storyInfo, onClose, onEditClick, onDeleteClick }) => 
             <MdUpdate className='text-xl' /> UPDATE STORY
           </button>
 
+          <button className='btn-small btn-delete flex items-center gap-1 whitespace-nowrap' onClick={onDeleteClick}>
+            <MdDeleteOutline className='text-xl' /> DELETE STORY
+          </button>
+
           <button onClick={onClose} className='md:hidden ml-auto'>
             <MdClose className='text-xl text-slate-400' />
           </button>
