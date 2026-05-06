@@ -12,7 +12,9 @@ const { authenticateToken } = require('./utilities');
 const User = require('./models/user.model');
 const TravelStory = require('./models/travelStory.model');
 
-mongoose.connect(process.env.MONGODB_URI);
+mongoose.connect(process.env.MONGODB_URI)
+    .then(() => console.log("MongoDB Connected"))
+    .catch((err) => console.log("MongoDB Connection Error: ", err));
 
 // Create folders if they don't exist
 const uploadsDir = path.join(__dirname, 'uploads');
