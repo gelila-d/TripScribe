@@ -78,7 +78,7 @@ const Login = () => {
             {error && <p className='text-red-500 text-xs pb-1'>{error}</p>}
             <button type='submit' className='btn-primary'>LOGIN</button>
             <p className='text-center text-sm text-slate-400 my-3'>Or</p>
-            <button type='button' className='btn-primary' onClick={() => { navigate('/signUp') }}>CREATE ACCOUNT</button>
+            <button type='button' className='btn-primary' onClick={() => { navigate('/signup') }}>CREATE ACCOUNT</button>
           </form>
         </div>
       </div>
