@@ -21,9 +21,15 @@ const AddEditTravelStory = ({ storyInfo, type, onClose, onAddStory, onUpdateStor
     if (type === "edit" && storyInfo) {
       setTitle(storyInfo.title);
       setStory(storyInfo.story);
-      setVisitedDate(storyInfo.visitedDate);
-      setVisitedLocation(storyInfo.visitedLocations);
+      setVisitedDate(storyInfo.visitedDate ? new Date(storyInfo.visitedDate) : null);
+      setVisitedLocation(storyInfo.visitedLocations || []);
       setStoryImg(storyInfo.imageUrl);
+    } else {
+      setTitle("");
+      setStory("");
+      setVisitedDate(null);
+      setVisitedLocation([]);
+      setStoryImg(null);
     }
   }, [type, storyInfo]);
 

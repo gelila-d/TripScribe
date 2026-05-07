@@ -57,7 +57,7 @@ const Home = () => {
       const response = await axiosInstance.post("/add-travel-story", storyData);
       if (response.data && !response.data.error) {
         toast.success("Story added successfully");
-        getAllTravelStories();
+        handleClearSearch(); // Reset search/filter to show the new story
         setOpenAddEditModel({ isShown: false, type: "add", data: null });
       }
     } catch (error) {
@@ -84,7 +84,7 @@ const Home = () => {
       const response = await axiosInstance.delete("/delete-travel-story/" + data._id);
       if (response.data && !response.data.error) {
         toast.error("Story deleted successfully");
-        getAllTravelStories();
+        refreshData(); // Maintain current filter view
         setOpenViewModal({ isShown: false, data: null });
         setOpenAddEditModel({ isShown: false, type: "add", data: null });
       }

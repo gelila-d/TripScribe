@@ -30,7 +30,6 @@ const ImageSelector = ({ image, setImage, handleDeleteImg }) => {
   };
 
   const handleRemoveImage = () => {
-    setImage(null);
     handleDeleteImg();
   };
 
