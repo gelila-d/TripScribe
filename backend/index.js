@@ -93,21 +93,20 @@ app.delete("/delete-image", async (req, res) => {
     const { imageUrl } = req.query;
     if (!imageUrl) return res.status(400).json({ message: "No URL provided" });
 
-    // Don't delete placeholder or asset images
-    if (imageUrl.includes('/assets/')) {
-        return res.status(200).json({ message: "Asset images cannot be deleted" });
-    }
-
     try {
+        // Extract filename and verify it's in the uploads folder
         const filename = path.basename(imageUrl);
         const filePath = path.join(__dirname, 'uploads', filename);
+
         if (fs.existsSync(filePath)) {
             fs.unlinkSync(filePath);
-            res.status(200).json({ message: "Image deleted" });
+            res.status(200).json({ message: "Image deleted successfully" });
         } else {
-            res.status(404).json({ message: "File not found" });
+            res.status(404).json({ message: "Image file not found" });
         }
-    } catch (err) { res.status(500).json({ message: "Delete error" }); }
+    } catch (err) { 
+        res.status(500).json({ message: "Delete error", error: err.message }); 
+    }
 });
 
 // --- TRAVEL STORY ROUTES ---
@@ -161,8 +160,18 @@ app.delete("/delete-travel-story/:id", authenticateToken, async (req, res) => {
         const travelStory = await TravelStory.findOne({ _id: req.params.id, userId: req.user.userId });
         if (!travelStory) return res.status(404).json({ message: "Story not found" });
 
+        // Delete the image file from uploads folder
+        const imageUrl = travelStory.imageUrl;
+        if (imageUrl && !imageUrl.includes('/assets/')) {
+            const filename = path.basename(imageUrl);
+            const filePath = path.join(__dirname, 'uploads', filename);
+            if (fs.existsSync(filePath)) {
+                fs.unlinkSync(filePath);
+            }
+        }
+
         await TravelStory.deleteOne({ _id: req.params.id, userId: req.user.userId });
-        res.status(200).json({ message: "Story deleted" });
+        res.status(200).json({ message: "Story and associated image deleted" });
     } catch (err) { res.status(500).json({ message: "Delete error" }); }
 });
 

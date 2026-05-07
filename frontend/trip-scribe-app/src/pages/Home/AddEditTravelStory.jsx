@@ -54,6 +54,7 @@ const AddEditTravelStory = ({ storyInfo, type, onClose, onAddStory, onUpdateStor
   const handleAddOrUpdateClick = async () => {
     if (!title) { setError("Please enter the title"); return; }
     if (!story) { setError("Please enter the story"); return; }
+    if (!storyImg) { setError("Please select an image"); return; }
     setError("");
     setLoading(true);
 
