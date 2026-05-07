@@ -2,7 +2,7 @@ import React, { useRef, useState, useEffect } from 'react'
 import { FaRegFileImage } from 'react-icons/fa'
 import { MdDeleteOutline } from 'react-icons/md'
 
-const ImageSelector = ({ image, setImage, handleDeleteImg }) => {
+const ImageSelector = React.memo(({ image, setImage, handleDeleteImg }) => {
   const inputRef = useRef(null);
   const [previewUrl, setPreviewUrl] = useState(null);
 
@@ -74,6 +74,6 @@ const ImageSelector = ({ image, setImage, handleDeleteImg }) => {
       )}
     </div>
   );
-};
+});
 
-export default ImageSelector;
+export default ImageSelector;

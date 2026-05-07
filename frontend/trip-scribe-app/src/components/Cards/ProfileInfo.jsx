@@ -1,7 +1,7 @@
 import React from 'react';
 import { getInitials } from '../../utils/helper.js';
 
-const ProfileInfo = ({ userInfo, onLogout }) => {
+const ProfileInfo = React.memo(({ userInfo, onLogout }) => {
   if (!userInfo) {
     return null;
   }
@@ -24,6 +24,6 @@ const ProfileInfo = ({ userInfo, onLogout }) => {
       </div>
     </div>
   );
-};
+});
 
 export default ProfileInfo;

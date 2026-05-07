@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { GrMapLocation } from 'react-icons/gr';
 import { MdAdd, MdClose } from 'react-icons/md';
 
-const TagInput = ({ tags = [], setTags }) => {
+const TagInput = React.memo(({ tags = [], setTags }) => {
   const [inputValue, setInputValue] = useState("");
 
   const addNewTag = () => {
@@ -65,6 +65,6 @@ const TagInput = ({ tags = [], setTags }) => {
       </div>
     </div>
   );
-};
+});
 
 export default TagInput;

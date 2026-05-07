@@ -3,7 +3,7 @@ import React from 'react'
 import { GrMapLocation } from 'react-icons/gr'
 import { MdDeleteOutline, MdUpdate, MdClose } from 'react-icons/md'
 
-const ViewTravelStory = ({ storyInfo, onClose, onEditClick, onDeleteClick }) => {
+const ViewTravelStory = React.memo(({ storyInfo, onClose, onEditClick, onDeleteClick }) => {
   return (
     <div className='relative'>
       <div className='flex flex-col md:flex-row items-start md:items-center justify-between gap-3'>

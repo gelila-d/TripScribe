@@ -3,7 +3,7 @@ import { DayPicker } from 'react-day-picker'
 import moment from 'moment'
 import { MdClose, MdOutlineDateRange } from 'react-icons/md'
 
-const DateSelector = ({ date, setDate }) => {
+const DateSelector = React.memo(({ date, setDate }) => {
   const [openDatePicker, setOpenDatePicker] = useState(false)
   return (
     <div>

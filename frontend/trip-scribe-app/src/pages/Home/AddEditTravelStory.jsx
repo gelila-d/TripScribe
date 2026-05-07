@@ -8,7 +8,7 @@ import axiosInstance from '../../utils/axiosInstance';
 import uploadImage from '../../utils/uploadImage';
 import { toast } from 'react-toastify';
 
-const AddEditTravelStory = ({ storyInfo, type, onClose, onAddStory, onUpdateStory, onDeleteStory }) => {
+const AddEditTravelStory = React.memo(({ storyInfo, type, onClose, onAddStory, onUpdateStory, onDeleteStory }) => {
   const [title, setTitle] = useState(storyInfo?.title || "");
   const [story, setStory] = useState(storyInfo?.story || "");
   const [visitedDate, setVisitedDate] = useState(storyInfo?.visitedDate || null);
