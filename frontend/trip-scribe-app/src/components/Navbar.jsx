@@ -3,7 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import ProfileInfo from './Cards/ProfileInfo';
 import SearchBar from './Input/SearchBar';
 
-const Navbar = ({ userInfo, searchQuery, setSearchQuery, onSearchNote, handleClearSearch }) => {
+const Navbar = React.memo(({ userInfo, searchQuery, setSearchQuery, onSearchNote, handleClearSearch }) => {
   const navigate = useNavigate();
 
   const onLogout = () => {
@@ -42,6 +42,6 @@ const Navbar = ({ userInfo, searchQuery, setSearchQuery, onSearchNote, handleCle
       )}
     </div>
   );
-};
+});
 
 export default Navbar;

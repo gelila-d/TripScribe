@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
 import Navbar from '../../components/Navbar.jsx';
 import axiosInstance from '../../utils/axiosInstance.js';
@@ -52,20 +52,58 @@ const Home = () => {
     }
   }, []);
 
-  const handleAddStory = async (storyData) => {
+  const onSearchStory = useCallback(async (query) => {
+    setLoading(true);
+    try {
+      const response = await axiosInstance.get("/search", { params: { query } });
+      if (response.data?.stories) {
+        setFilterType("search");
+        setAllStories(response.data.stories);
+      }
+    } catch (error) { console.error(error); } finally { setLoading(false); }
+  }, []);
+
+  const filterStoriesByDate = useCallback(async (day) => {
+    if (!day?.from || !day?.to) return;
+    setLoading(true);
+    try {
+      const response = await axiosInstance.get("/travel-stories/filter", {
+        params: { startDate: day.from.getTime(), endDate: day.to.getTime() },
+      });
+      if (response.data?.stories) {
+        setFilterType("date");
+        setAllStories(response.data.stories);
+      }
+    } catch (error) { console.error(error); } finally { setLoading(false); }
+  }, []);
+
+  const refreshData = useCallback(() => {
+    if (filterType === "search" && searchQuery) onSearchStory(searchQuery);
+    else if (filterType === "date") filterStoriesByDate(dateRange);
+    else getAllTravelStories();
+  }, [filterType, searchQuery, dateRange, onSearchStory, filterStoriesByDate, getAllTravelStories]);
+
+  const handleClearSearch = useCallback(() => {
+    setFilterType("");
+    setSearchQuery("");
+    setDateRange({ from: null, to: null });
+    getAllTravelStories();
+  }, [getAllTravelStories]);
+
+  const handleAddStory = useCallback(async (storyData) => {
     try {
       const response = await axiosInstance.post("/add-travel-story", storyData);
       if (response.data && !response.data.error) {
         toast.success("Story added successfully");
-        handleClearSearch(); // Reset search/filter to show the new story
+        handleClearSearch();
         setOpenAddEditModel({ isShown: false, type: "add", data: null });
       }
     } catch (error) {
       toast.error(error.response?.data?.message || "Something went wrong");
     }
-  };
+  }, [handleClearSearch]);
 
-  const handleUpdateStory = async (storyId, storyData) => {
+  const handleUpdateStory = useCallback(async (storyId, storyData) => {
     try {
       const response = await axiosInstance.put("/edit-travel-story/" + storyId, storyData);
       if (response.data && !response.data.error) {
@@ -76,24 +114,24 @@ const Home = () => {
     } catch (error) {
       toast.error(error.response?.data?.message || "Update failed");
     }
-  };
+  }, [refreshData]);
 
-  const handleDeleteStory = async (data) => {
-    setLoading(true); // START LOADING FOR DELETE
+  const handleDeleteStory = useCallback(async (data) => {
+    setLoading(true);
     try {
       const response = await axiosInstance.delete("/delete-travel-story/" + data._id);
       if (response.data && !response.data.error) {
         toast.error("Story deleted successfully");
-        refreshData(); // Maintain current filter view
+        refreshData();
         setOpenViewModal({ isShown: false, data: null });
         setOpenAddEditModel({ isShown: false, type: "add", data: null });
       }
     } catch (error) {
       toast.error("Delete failed");
     } finally {
-      setLoading(false); // STOP LOADING
+      setLoading(false);
     }
-  };
+  }, [refreshData]);
 
   const updateIsFavourite = useCallback(async (storyData) => {
     try {
@@ -109,48 +147,10 @@ const Home = () => {
     }
   }, [refreshData]);
 
-  const refreshData = () => {
-    if (filterType === "search" && searchQuery) onSearchStory(searchQuery);
-    else if (filterType === "date") filterStoriesByDate(dateRange);
-    else getAllTravelStories();
-  };
-
-  const onSearchStory = useCallback(async (query) => {
-    setLoading(true);
-    try {
-      const response = await axiosInstance.get("/search", { params: { query } });
-      if (response.data?.stories) {
-        setFilterType("search");
-        setAllStories(response.data.stories);
-      }
-    } catch (error) { console.error(error); } finally { setLoading(false); }
-  }, []);
-
-  const handleClearSearch = () => {
-    setFilterType("");
-    setSearchQuery("");
-    setDateRange({ from: null, to: null });
-    getAllTravelStories();
-  };
-
-  const filterStoriesByDate = async (day) => {
-    if (!day?.from || !day?.to) return;
-    setLoading(true);
-    try {
-      const response = await axiosInstance.get("/travel-stories/filter", {
-        params: { startDate: day.from.getTime(), endDate: day.to.getTime() },
-      });
-      if (response.data?.stories) {
-        setFilterType("date");
-        setAllStories(response.data.stories);
-      }
-    } catch (error) { console.error(error); } finally { setLoading(false); }
-  };
-
-  const handleDayClick = (day) => {
+  const handleDayClick = useCallback((day) => {
     setDateRange(day);
     filterStoriesByDate(day);
-  };
+  }, [filterStoriesByDate]);
 
   useEffect(() => {
     getUserInfo();

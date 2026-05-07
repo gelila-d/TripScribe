@@ -2,7 +2,7 @@ import React from 'react';
 import { FaMagnifyingGlass } from 'react-icons/fa6';
 import { IoMdClose } from 'react-icons/io';
 
-const SearchBar = ({ value, onChange, handleSearch, onClearSearch }) => {
+const SearchBar = React.memo(({ value, onChange, handleSearch, onClearSearch }) => {
   return (
     <div className='w-full md:w-80 flex items-center px-4 bg-slate-100 rounded-md'>
       <input
@@ -27,6 +27,6 @@ const SearchBar = ({ value, onChange, handleSearch, onClearSearch }) => {
       />
     </div>
   );
-};
+});
 
 export default SearchBar;
