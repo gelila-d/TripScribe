@@ -28,7 +28,7 @@ const Home = () => {
   const [openAddEditModel, setOpenAddEditModel] = useState({ isShown: false, type: "add", data: null });
   const [openViewModal, setOpenViewModal] = useState({ isShown: false, data: null });
 
-  const getUserInfo = async () => {
+  const getUserInfo = useCallback(async () => {
     try {
       const response = await axiosInstance.get('/get-user');
       if (response.data && response.data.user) setUserInfo(response.data.user);
@@ -38,9 +38,9 @@ const Home = () => {
         navigate('/login');
       }
     }
-  };
+  }, [navigate]);
 
-  const getAllTravelStories = async () => {
+  const getAllTravelStories = useCallback(async () => {
     setLoading(true);
     try {
       const response = await axiosInstance.get('/get-all-stories');
@@ -50,7 +50,7 @@ const Home = () => {
     } finally {
       setLoading(false);
     }
-  };
+  }, []);
 
   const handleAddStory = async (storyData) => {
     try {
@@ -95,7 +95,7 @@ const Home = () => {
     }
   };
 
-  const updateIsFavourite = async (storyData) => {
+  const updateIsFavourite = useCallback(async (storyData) => {
     try {
       const response = await axiosInstance.put(`/update-is-favourite/${storyData._id}`, {
         isFavourite: !storyData.isFavourite,
@@ -107,7 +107,7 @@ const Home = () => {
     } catch (error) {
       toast.error("An error occurred");
     }
-  };
+  }, [refreshData]);
 
   const refreshData = () => {
     if (filterType === "search" && searchQuery) onSearchStory(searchQuery);
@@ -115,7 +115,7 @@ const Home = () => {
     else getAllTravelStories();
   };
 
-  const onSearchStory = async (query) => {
+  const onSearchStory = useCallback(async (query) => {
     setLoading(true);
     try {
       const response = await axiosInstance.get("/search", { params: { query } });
@@ -124,7 +124,7 @@ const Home = () => {
         setAllStories(response.data.stories);
       }
     } catch (error) { console.error(error); } finally { setLoading(false); }
-  };
+  }, []);
 
   const handleClearSearch = () => {
     setFilterType("");

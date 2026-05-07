@@ -3,7 +3,7 @@ import React from 'react';
 import { FaHeart } from 'react-icons/fa6';
 import { GrMapLocation } from "react-icons/gr"; 
 
-const TravelStoryCard = ({
+const TravelStoryCard = React.memo(({
   imgUrl,
   title,
   date,
@@ -20,6 +20,7 @@ const TravelStoryCard = ({
         alt={title}
         className='w-full h-56 object-cover rounded-lg'
         onClick={onClick}
+        loading="lazy"
       />
 
       <button 
