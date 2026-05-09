@@ -93,7 +93,7 @@ app.post("/image-upload", upload.single("image"), async (req, res) => {
     } catch (err) { res.status(500).json({ message: "Upload error" }); }
 });
 
-app.delete("/delete-image", async (req, res) => {
+app.delete("/delete-image", authenticateToken, async (req, res) => {
     const { imageUrl } = req.query;
     if (!imageUrl) return res.status(400).json({ message: "No URL provided" });
 
