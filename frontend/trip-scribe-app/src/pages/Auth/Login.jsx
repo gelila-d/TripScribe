@@ -66,7 +66,7 @@ const Login = () => {
 
         <div className='w-full md:w-2/4 bg-white h-auto md:h-[75vh] rounded-lg relative p-8 md:p-16 shadow-lg shadow-cyan-200/20 '>
           <form onSubmit={handleLogin}>
-            <h4 className='text-2xl font-semibold mb-7'>Login </h4>
+            <h4 className='text-2xl font-semibold mb-7 text-center'>Login </h4>
             <input type='text' placeholder='Email' className='input-box'
               value={email}
               onChange={({ target }) => setEmail(target.value)}
@@ -76,9 +76,9 @@ const Login = () => {
             <PassWordInput value={password} onChange={({ target }) => setPassword(target.value)} />
 
             {error && <p className='text-red-500 text-xs pb-1'>{error}</p>}
-            <button type='submit' className='btn-primary'>LOGIN</button>
+            <button type='submit' className='btn-primary mt-2'>LOGIN</button>
             <p className='text-center text-sm text-slate-400 my-3'>Or</p>
-            <button type='button' className='btn-primary' onClick={() => { navigate('/signup') }}>CREATE ACCOUNT</button>
+            <button type='button' className='w-full text-violet-500 font-medium underline' onClick={() => { navigate('/signup') }}>CREATE ACCOUNT</button>
           </form>
         </div>
       </div>
