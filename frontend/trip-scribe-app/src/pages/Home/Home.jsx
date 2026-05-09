@@ -121,7 +121,7 @@ const Home = () => {
     try {
       const response = await axiosInstance.delete("/delete-travel-story/" + data._id);
       if (response.data && !response.data.error) {
-        toast.error("Story deleted successfully");
+        toast.success("Story deleted successfully");
         refreshData();
         setOpenViewModal({ isShown: false, data: null });
         setOpenAddEditModel({ isShown: false, type: "add", data: null });

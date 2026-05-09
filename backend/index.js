@@ -80,11 +80,15 @@ app.get("/get-user", authenticateToken, async (req, res) => {
 
 // --- IMAGE HANDLING ---
 
+const getBaseUrl = (req) => {
+    const protocol = req.get('host').includes('localhost') || req.get('host').includes('127.0.0.1') ? 'http' : 'https';
+    return `${protocol}://${req.get('host')}`;
+};
+
 app.post("/image-upload", upload.single("image"), async (req, res) => {
     try {
         if (!req.file) return res.status(400).json({ error: true, message: "No file uploaded" });
-        const protocol = req.get('host').includes('localhost') || req.get('host').includes('127.0.0.1') ? 'http' : 'https';
-        const imageUrl = `${protocol}://${req.get('host')}/uploads/${req.file.filename}`;
+        const imageUrl = `${getBaseUrl(req)}/uploads/${req.file.filename}`;
         res.status(200).json({ imageUrl });
     } catch (err) { res.status(500).json({ message: "Upload error" }); }
 });
@@ -113,17 +117,24 @@ app.delete("/delete-image", async (req, res) => {
 
 app.post("/add-travel-story", authenticateToken, async (req, res) => {
     const { title, story, visitedLocations, imageUrl, visitedDate } = req.body;
-    if (!title || !story || !imageUrl || !visitedDate) return res.status(400).json({ message: "Fields missing" });
+    if (!title || !story || !imageUrl || !visitedDate) {
+        return res.status(400).json({ message: "All fields are required" });
+    }
 
     try {
         const newStory = new TravelStory({
-            title, story, visitedLocations, imageUrl,
+            title, 
+            story, 
+            visitedLocations: Array.isArray(visitedLocations) ? visitedLocations : [], 
+            imageUrl,
             visitedDate: new Date(Number(visitedDate)),
             userId: req.user.userId
         });
         await newStory.save();
         res.status(201).json({ error: false, message: "Story added", story: newStory });
-    } catch (err) { res.status(500).json({ message: "Server error" }); }
+    } catch (err) { 
+        res.status(500).json({ message: "Server error", error: err.message }); 
+    }
 });
 
 app.get("/get-all-stories", authenticateToken, async (req, res) => {
@@ -141,18 +152,22 @@ app.put("/edit-travel-story/:id", authenticateToken, async (req, res) => {
         const travelStory = await TravelStory.findOne({ _id: id, userId: req.user.userId });
         if (!travelStory) return res.status(404).json({ message: "Story not found" });
 
-        const protocol = req.get('host').includes('localhost') || req.get('host').includes('127.0.0.1') ? 'http' : 'https';
-        const placeholderImgUrl = `${protocol}://${req.get('host')}/assets/placeholder.jpg`;
+        const placeholderImgUrl = `${getBaseUrl(req)}/assets/placeholder.jpg`;
 
-        travelStory.title = title;
-        travelStory.story = story;
-        travelStory.visitedLocations = visitedLocations;
+        travelStory.title = title || travelStory.title;
+        travelStory.story = story || travelStory.story;
+        travelStory.visitedLocations = Array.isArray(visitedLocations) ? visitedLocations : travelStory.visitedLocations;
         travelStory.imageUrl = imageUrl || placeholderImgUrl;
-        travelStory.visitedDate = new Date(Number(visitedDate));
+        
+        if (visitedDate) {
+            travelStory.visitedDate = new Date(Number(visitedDate));
+        }
 
         await travelStory.save();
         res.status(200).json({ story: travelStory, message: "Update successful" });
-    } catch (err) { res.status(500).json({ message: "Update error" }); }
+    } catch (err) { 
+        res.status(500).json({ message: "Update error", error: err.message }); 
+    }
 });
 
 app.delete("/delete-travel-story/:id", authenticateToken, async (req, res) => {
