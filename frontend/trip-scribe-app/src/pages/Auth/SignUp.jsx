@@ -66,7 +66,7 @@ const SignUp = () => {
 
       <div className='container h-screen flex items-center justify-center px-6 md:px-20 mx-auto'>
         <div 
-          className="hidden md:flex w-2/4 h-[90vh] items-end bg-center rounded-lg p-10 z-50 bg-no-repeat bg-cover"
+          className="hidden md:flex w-2/4 h-[85vh] items-end bg-center rounded-l-lg p-10 z-50 bg-no-repeat bg-cover"
           style={{ backgroundImage: `url(${signupBg})` }}
         >
           <div>
@@ -77,9 +77,9 @@ const SignUp = () => {
           </div>
         </div>
 
-        <div className='w-full md:w-2/4 bg-white h-full md:h-[90vh] rounded-lg relative p-8 md:p-16 shadow-lg shadow-cyan-200/20 '>
+        <div className='w-full md:w-2/4 bg-white h-full md:h-[85vh] rounded-r-lg relative p-8 md:px-20 flex flex-col justify-center shadow-lg shadow-cyan-200/20 '>
           <form onSubmit={handleSignUp}>
-            <h4 className='text-2xl font-semibold mb-7 text-center'>SignUp</h4>
+            <h4 className='text-2xl font-semibold mb-5 text-center'>SignUp</h4>
             <input type='text' placeholder='Full Name' className='input-box'
               value={name} onChange={({ target }) => setName(target.value)} />
             <input type='text' placeholder='Email' className='input-box'
@@ -91,6 +91,10 @@ const SignUp = () => {
             <button type='submit' className='btn-primary mt-2'>CREATE ACCOUNT</button>
             <p className='text-center text-sm text-slate-400 my-3'>Already have an account?</p>
             <button type='button' className='w-full text-violet-500 font-medium underline' onClick={() => navigate('/login')}>LOGIN</button>
+            <p className='text-[10px] text-slate-400 text-center mt-6 uppercase tracking-widest'>
+              By signing up, you agree to our <br />
+              <span className='underline cursor-pointer'>Terms of Service</span> & <span className='underline cursor-pointer'>Privacy Policy</span>
+            </p>
           </form>
         </div>
       </div>

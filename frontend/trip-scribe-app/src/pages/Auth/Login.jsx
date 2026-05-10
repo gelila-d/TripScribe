@@ -68,9 +68,9 @@ const Login = () => {
           </div>
         </div>
 
-        <div className='w-full md:w-2/4 bg-white h-auto md:h-[75vh] rounded-lg relative p-8 md:p-16 shadow-lg shadow-cyan-200/20 '>
+        <div className='w-full md:w-2/4 bg-white h-auto md:h-[75vh] rounded-lg relative p-8 md:p-12 shadow-lg shadow-cyan-200/20 '>
           <form onSubmit={handleLogin}>
-            <h4 className='text-2xl font-semibold mb-7 text-center'>Login </h4>
+            <h4 className='text-2xl font-semibold mb-5 text-center'>Login </h4>
             <input type='text' placeholder='Email' className='input-box'
               value={email}
               onChange={({ target }) => setEmail(target.value)}
