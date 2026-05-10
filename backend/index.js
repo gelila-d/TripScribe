@@ -12,14 +12,6 @@ const { authenticateToken } = require('./utilities');
 const User = require('./models/user.model');
 const TravelStory = require('./models/travelStory.model');
 
-mongoose.connect(process.env.MONGODB_URI)
-    .then(() => console.log("MongoDB Connected"))
-    .catch((err) => console.log("MongoDB Connection Error: ", err));
-
-// Create folders if they don't exist
-const uploadsDir = path.join(__dirname, 'uploads');
-if (!fs.existsSync(uploadsDir)) fs.mkdirSync(uploadsDir);
-
 const app = express();
 
 app.use(cors({
@@ -33,6 +25,10 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
 app.use('/assets', express.static(path.join(__dirname, 'assets')));
+
+// Create folders if they don't exist
+const uploadsDir = path.join(__dirname, 'uploads');
+if (!fs.existsSync(uploadsDir)) fs.mkdirSync(uploadsDir);
 
 // --- AUTH ROUTES ---
 
@@ -241,5 +237,12 @@ app.get("/travel-stories/filter", authenticateToken, async (req, res) => {
     } catch (err) { res.status(500).json({ message: "Filter error" }); }
 });
 
-const PORT = process.env.PORT || 8000;
-app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
+mongoose.connect(process.env.MONGODB_URI)
+    .then(() => {
+        console.log("✅ MongoDB Connected Successfully");
+        const PORT = process.env.PORT || 8000;
+        app.listen(PORT, () => console.log(`🚀 Server running on port ${PORT}`));
+    })
+    .catch((err) => {
+        console.error("❌ MongoDB Connection Error:", err.message);
+    });

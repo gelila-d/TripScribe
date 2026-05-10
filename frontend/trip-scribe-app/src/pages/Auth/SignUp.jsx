@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import PassWordInput from '../../components/Input/PasswordInput.jsx';
 import { validateEmail } from '../../utils/helper.js';
 import axiosInstance from '../../utils/axiosInstance.js';
+import signupBg from '../../assets/images/signup-bg.jpg';
 
 const SignUp = () => {
   const navigate = useNavigate();
@@ -61,10 +62,13 @@ const SignUp = () => {
   return (
     <div className='h-screen bg-violet-100 overflow-hidden relative'>
       <div className='login-ui-box right-10 -top-40 hidden md:block' />
-      <div className='login-ui-box bg-violet-350 -bottom-40 right-1/2 hidden md:block' />
+      <div className='login-ui-box bg-violet-400 -bottom-40 right-1/2 hidden md:block' />
 
       <div className='container h-screen flex items-center justify-center px-6 md:px-20 mx-auto'>
-        <div className="hidden md:flex w-2/4 h-[90vh] items-end bg-[url('./assets/images/signup-bg.jpg')] bg-center rounded-lg p-10 z-50">
+        <div 
+          className="hidden md:flex w-2/4 h-[90vh] items-end bg-center rounded-lg p-10 z-50 bg-no-repeat bg-cover"
+          style={{ backgroundImage: `url(${signupBg})` }}
+        >
           <div>
             <h4 className='text-4xl text-white font-semibold leading-[58px]'>Join the<br /> Adventure</h4>
             <p className='text-[15px] text-white leading-6 pr-7 mt-4'>
