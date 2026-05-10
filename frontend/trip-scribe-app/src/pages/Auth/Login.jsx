@@ -55,7 +55,7 @@ const Login = () => {
       <div className='container h-screen flex items-center justify-center px-6 md:px-20 mx-auto'>
 
         <div 
-          className="hidden md:flex w-2/4 h-[90vh] items-end bg-center rounded-lg p-10 z-50 bg-no-repeat bg-cover"
+          className="hidden md:flex w-2/4 h-[85vh] items-end bg-center rounded-l-lg p-10 z-50 bg-no-repeat bg-cover"
           style={{ backgroundImage: `url(${loginBg})` }}
         >
           <div>
@@ -68,7 +68,7 @@ const Login = () => {
           </div>
         </div>
 
-        <div className='w-full md:w-2/4 bg-white h-auto md:h-[75vh] rounded-lg relative p-8 md:p-12 shadow-lg shadow-cyan-200/20 '>
+        <div className='w-full md:w-2/4 bg-white h-auto md:h-[85vh] rounded-lg md:rounded-l-none md:rounded-r-lg relative p-8 md:px-20 flex flex-col justify-center shadow-lg shadow-cyan-200/20 '>
           <form onSubmit={handleLogin}>
             <h4 className='text-2xl font-semibold mb-5 text-center'>Login </h4>
             <input type='text' placeholder='Email' className='input-box'

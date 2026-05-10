@@ -77,7 +77,7 @@ const SignUp = () => {
           </div>
         </div>
 
-        <div className='w-full md:w-2/4 bg-white h-full md:h-[85vh] rounded-r-lg relative p-8 md:px-20 flex flex-col justify-center shadow-lg shadow-cyan-200/20 '>
+        <div className='w-full md:w-2/4 bg-white h-auto md:h-[85vh] rounded-lg md:rounded-l-none md:rounded-r-lg relative p-8 md:px-20 flex flex-col justify-center shadow-lg shadow-cyan-200/20 '>
           <form onSubmit={handleSignUp}>
             <h4 className='text-2xl font-semibold mb-5 text-center'>SignUp</h4>
             <input type='text' placeholder='Full Name' className='input-box'
